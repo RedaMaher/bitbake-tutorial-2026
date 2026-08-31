@@ -139,12 +139,7 @@ Each layer needs a `conf/layer.conf` file. For now we create it with this conten
 
 **meta-tutorial/classes/base.bbclass and meta-tutorial/conf/bitbake.conf**
 
-For now, these files can be taken from the BitBake installation directory. They’re located in the classes and conf folders inside bitbake-2.18.0. Replace /path/to/bitbake-2.18.0 with the directory where you extracted BitBake, then copy them into the tutorial project:
-
-    cp "/path/to/bitbake-2.18.0/classes/base.bbclass" \
-        "$HOME/bbTutorial/meta-tutorial/classes/base.bbclass"
-    cp "/path/to/bitbake-2.18.0/conf/bitbake.conf" \
-        "$HOME/bbTutorial/meta-tutorial/conf/bitbake.conf"
+For now, these files can be taken from the BitBake installation directory. They’re located in the folders bitbake-2.18.0/classes and bitbake-2.18.0/conf. Simply copy them into the tutorial project.
 
 #### 4.2.2 Some notes on the created files
 
