@@ -198,8 +198,9 @@ Notice that BitBake also created a `tmp` directory alongside `conf/`.
 
 BitBake needs recipes before it can do useful work. Check the current recipe list:
 
-    cd "$HOME/bbTutorial/build"
+
     bitbake -s
+    
     Recipe Name          Latest Version        Preferred Version
     ===========          ==============        =================
 
@@ -281,6 +282,7 @@ A `.bbclass` holds reusable metadata, so a task doesn’t have to be copied into
 
 Create `$HOME/bbTutorial/meta-tutorial/recipes-tutorial/second/second_1.0.bb`:
 
+
     DESCRIPTION = "I am the second recipe"
     PR = "r1"
 
@@ -300,7 +302,7 @@ This recipe shows three kinds of reuse: `inherit mybuild` pulls in the class’s
 
 ### 6.3 Exploring recipes and tasks
 
-    cd "$HOME/bbTutorial/build"
+
     bitbake -s
 
 should now show:
@@ -459,7 +461,7 @@ Create `$HOME/bbTutorial/meta-two/recipes-base/first/first_0.1.bbappend`:
 
 Its filename matches `first_0.1.bb`, so BitBake merges this into that recipe — this is how one layer customizes a recipe owned by another without editing the original.
 
-    cd "$HOME/bbTutorial/build"
+
     bitbake-layers show-appends
     bitbake -c listtasks first
     bitbake first
