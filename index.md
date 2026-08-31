@@ -1,24 +1,11 @@
----
-layout: default
-title: A Practical Guide to BitBake
----
-
 # A Practical Guide to BitBake
 
 ## Updated for BitBake 2.18 and Python 3.14
 
-*Build the smallest standalone project, then learn recipes, classes, layers, appends, includes, tasks, and variables.*
-
-|                                       |                                               |
-|---------------------------------------|-----------------------------------------------|
-| **Original learning path**            | Harald Achitz                                 |
-| **2026 modernization and validation** | Adn Elkawas                                   |
-| **Tested baseline**                   | Ubuntu 26.04 · Python 3.14.4 · BitBake 2.18.0 |
-
 **Contents**
 
 1.  [Preface](#1-preface)
-2.  [BitBake fundamentals](#2-bitbake-fundamentals)
+2.  [BitBake](#2-bitbake)
 3.  [Setup BitBake](#3-setup-bitbake)
 4.  [Create a project](#4-create-a-project)
 5.  [The first recipe](#5-the-first-recipe)
@@ -32,159 +19,77 @@ title: A Practical Guide to BitBake
 
 ### 1.1 About this tutorial
 
-BitBake is best known as the task engine used by OpenEmbedded and the Yocto Project to build embedded Linux systems. It is powerful, but the relationship between configuration files, layers, recipes, classes, tasks, and variables is not immediately obvious.
+BitBake is used mainly by OpenEmbedded and the Yocto Project to build Linux distributions, and it has a fairly steep learning curve. This tutorial exists to flatten that curve.
 
-This tutorial starts with an almost empty standalone project and adds one idea at a time. It is deliberately much smaller than a real Yocto build.
+It does not try to cover everything about BitBake — that isn’t really possible — but it explains the fundamentals well enough that you can start writing your own recipes.
 
-### 1.2 Target
+### 1.2 Target of this tutorial
 
-By the end, you will be able to:
+The tutorial builds the smallest possible project and extends it step by step, to show and explain how BitBake actually works.
 
-- Explain what BitBake parses and executes.
-- Create a minimal build directory and layer.
-- Write `.bb` recipes containing shell and Python tasks.
-- Reuse tasks through `.bbclass` files.
-- Configure multiple layers and their relationships.
-- Extend a recipe with a `.bbappend` file.
-- Distinguish `include` from `require`.
-- Read global and recipe-local variables.
-- Inspect recipes, tasks, layers, append matches, and logs.
+### 1.3 Acknowledgments
 
-This is a fundamentals tutorial. It does not attempt to build a Linux image or replace the official manual.
+Thanks to Tritech (http://tritech.se) for the time to prepare the first version of this document back in 2014 — without it, this tutorial wouldn’t exist. Thanks also to everyone who has reported issues and typos over the years.
 
-### 1.3 Acknowledgment and feedback
+### 1.4 Feedback
 
-The learning sequence is inspired by Harald Achitz’s original “A Practical Guide to BitBake.” Issues for the accompanying example repository can be reported at the [BitBake guide issue tracker](https://bitbucket.org/a4z/bitbakeguide/issues).
+Bugs, unclear sections, typos, or suggestions can be reported at the [issue tracker](https://bitbucket.org/a4z/bitbakeguide/issues) — no registration required.
 
-When reporting a problem, include the OS, Python version, BitBake version, chapter, command, and complete error message.
+## 2. BitBake
 
-## 2. BitBake fundamentals
+### 2.1 What is BitBake
 
-### 2.1 What BitBake is
+BitBake is, at its core, a Python program: driven by configuration you write, it executes tasks you define for specified targets, called recipes.
 
-The official manual describes BitBake as a generic task-execution engine. It parses metadata, constructs a dependency graph, and runs shell or Python tasks in the required order. OpenEmbedded supplies large metadata collections on top of this engine to build complete software stacks. See the [official overview](https://docs.yoctoproject.org/bitbake/2.18/bitbake-user-manual/bitbake-user-manual-intro.html).
+### 2.1.1 Config, tasks and recipes
 
-A useful mental model is:
+Configuration, tasks, and recipes are written in BitBake’s own small language — variables plus shell or Python code. Since BitBake actually executes that code, it could in theory be used for things other than building software, though that’s probably not a great idea.
 
-1.  **Configuration** tells BitBake where metadata lives and how the build behaves.
-2.  **Recipes** describe targets and their tasks.
-3.  **Classes** share common functionality.
-4.  **Dependencies** determine task order.
-5.  **BitBake** executes the resulting task graph and records logs.
-
-### 2.2 The five file types used here
-
-| Extension   | Purpose                                         |
-|-------------|-------------------------------------------------|
-| `.conf`     | Build or layer configuration                    |
-| `.bb`       | A recipe: one buildable target and its metadata |
-| `.bbclass`  | Reusable functions and tasks                    |
-| `.bbappend` | Metadata that extends a matching recipe         |
-| `.inc`      | Reusable metadata included by another file      |
-
-The official manual’s [concepts section](https://docs.yoctoproject.org/bitbake/2.18/bitbake-user-manual/bitbake-user-manual-intro.html#concepts) explains these metadata types in greater depth.
-
-### 2.3 Functions versus tasks
-
-A **function** is executable metadata. A **task** is a function registered in BitBake’s task graph. Task names normally begin with `do_`.
-
-For example:
-
-    do_build () {
-        echo "building"
-    }
-
-defines `do_build`. An `addtask` statement can register a function and specify ordering:
-
-    addtask mypatch before do_build
-
-This tells BitBake that `do_mypatch` must run before `do_build` when the graph requires the build task.
+BitBake was built for building software, so it has features suited to that: it can resolve dependencies and put tasks into the right order. Building software packages also tends to repeat the same kinds of steps — downloading and extracting source, running configure, running make, writing a log message — and BitBake gives you a way to abstract, encapsulate, and reuse that work in a configurable way.
 
 ## 3. Setup BitBake
 
-This tutorial uses one fixed BitBake archive, extracts it, and adds it to the current terminal. No Conda environment, Docker image, or permanent .bashrc change is required.
+BitBake is available at [github.com/openembedded/bitbake](https://github.com/openembedded/bitbake). This tutorial was tested with Python 3.14.4 and BitBake 2.18.0 on Ubuntu 26.04 — if you hit a problem with a different combination, please report it (see 1.4). When BitBake is used inside a full Yocto/OpenEmbedded build it is normally bundled with the layers and started through the project’s own setup script; here we install the standalone `bitbake-2.18.0` release directly, so the engine underneath stays visible.
+
+Download the tagged [2.18.0 release](https://github.com/openembedded/bitbake/archive/refs/tags/2.18.0.zip) and extract it.
 
 ### 3.1 The installation of BitBake
 
-**Step 1: Check Python and the download tools**
+The installation is very simple:
 
-    python3 --version
-    wget --version
-    unzip -v
+- Add the extracted folder’s `bin` directory to `PATH`.
+- Add its `lib` directory to `PYTHONPATH`.
 
-Step 2: Download BitBake 2.18.0
+We can do this by running:
 
-The source is the official OpenEmbedded BitBake mirror on GitHub: [github.com/openembedded/bitbake](https://github.com/openembedded/bitbake)
+    export PATH="/path/to/bitbake-2.18.0/bin:$PATH"
+    export PYTHONPATH="/path/to/bitbake-2.18.0/lib:$PYTHONPATH"
 
-Download the fixed 2.18.0 archive directly: [Download BitBake 2.18.0](https://github.com/openembedded/bitbake/archive/refs/tags/2.18.0.zip)
+These commands configure BitBake for the current terminal session. If you open a new terminal, you must run them again.
 
-You can click the link in a browser, or choose a working directory and run these commands:
+First we check that everything works and BitBake is installed. To do that, run:
 
-    export BBTUTOR_DIR="$HOME/bbtutor"
-    mkdir -p "$BBTUTOR_DIR"
-    cd "$BBTUTOR_DIR"
-    wget -O bitbake-2.18.0.zip \
-        https://github.com/openembedded/bitbake/archive/refs/tags/2.18.0.zip
-
-**Step 3: Extract the archive**
-
-    cd "$BBTUTOR_DIR"
-    unzip bitbake-2.18.0.zip
-
-The extracted folder should be:
-
-    $BBTUTOR_DIR/bitbake-2.18.0
-
-Check it:
-
-    ls "$BBTUTOR_DIR/bitbake-2.18.0/bin/bitbake"
-    ls "$BBTUTOR_DIR/bitbake-2.18.0/lib/bb"
-
-**Step 4: Add BitBake to the current terminal**
-
-Set the location of the extracted BitBake folder:
-
-    export BITBAKE_ROOT_DIR="$BBTUTOR_DIR/bitbake-2.18.0"
-
-Add its `bin` directory to `PATH` and its `lib` directory to `PYTHONPATH`:
-
-    export PATH="$BITBAKE_ROOT_DIR/bin:$PATH"
-    export PYTHONPATH="$BITBAKE_ROOT_DIR/lib${PYTHONPATH:+:$PYTHONPATH}"
-
-These commands change only the current terminal. If you open a new terminal, run the same three commands again. This keeps the tutorial isolated and avoids changing every future shell.
-
-**Step 5: Verify the setup**
-
-Check which programs the shell will use:
-
-    which python3
-    python3 --version
-    which bitbake
     bitbake --version
 
 Expected output:
 
-    Python 3.14.4
     BitBake Build Tool Core version 2.18.0
 
-The paths should point to the system Python and the extracted BitBake folder. The version lines are output; do not type them back as commands.
+#### 3.1.1 Ubuntu permission check
 
-**Step 6: Ubuntu-only permission check**
-
-Before the first build, run:
+On Ubuntu, check whether the user namespace operation required by modern BitBake is allowed:
 
     unshare --user --map-root-user true
 
-If it returns silently, continue normally. If it reports write failed /proc/self/uid_map: Operation not permitted, Ubuntu’s AppArmor policy is blocking the user namespace that modern BitBake needs. Only in that case, use this temporary workaround:
+If the command finishes silently, continue normally. If it reports “write failed /proc/self/uid_map: Operation not permitted”, Ubuntu’s AppArmor policy is blocking the operation. Only in that case, apply this temporary workaround:
 
     echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
-    Then repeat the test:
-    unshare --user --map-root-user true
-    If it now finishes without an error, continue the tutorial. This is an Ubuntu host-security setting, not a BitBake configuration. The change is temporary and is normally restored after restarting the computer. If the same error appears after a reboot, repeat this step before running BitBake tasks.
+
+Then run the unshare check again. This command temporarily relaxes a system-wide Ubuntu security restriction until the next reboot; it is not a BitBake setting and should not be used on systems where the check already succeeds.
 
 ### 3.2 The BitBake documentation
 
-Use the versioned [BitBake 2.18 User Manual](https://docs.yoctoproject.org/bitbake/2.18/). The manual matches the BitBake version used by this tutorial.
+From the extracted folder you can build the manual yourself with `make html DOC=bitbake-user-manual` (run from its `doc` directory), or read it online. Use the versioned [BitBake 2.18 User Manual](https://docs.yoctoproject.org/bitbake/2.18/) so it matches the version used here.
 
 ## 4. Create a project
 
@@ -203,7 +108,7 @@ We will create:
             ├── bitbake.conf
             └── layer.conf
 
-The `build` directory is where we run BitBake. `meta-tutorial` is a **layer**: a collection of related configuration, recipes, classes, and append files.
+The `build` directory is where we run BitBake. `meta-tutorial` is a **layer** — a folder of related configuration, recipes, classes, and append files, conventionally prefixed `meta-`.
 
 ### 4.2 The smallest possible project
 
@@ -213,93 +118,120 @@ First create the directories:
     mkdir -p "$HOME/bbTutorial/meta-tutorial/classes"
     mkdir -p "$HOME/bbTutorial/meta-tutorial/conf"
 
-#### 4.2.1 Create `build/conf/bblayers.conf`
+#### 4.2.1 The required config files
 
-Create `$HOME/bbTutorial/build/conf/bblayers.conf`:
+First a description of the needed files, then a short description of their content.
+
+**build/conf/bblayers.conf**
+
+The first file BitBake expects is `conf/bblayers.conf` in its working directory, which is our build directory. For now we create it with this content:
 
     BBPATH := "${TOPDIR}"
     BBFILES ?= ""
-    BBLAYERS = " \
-        ${TOPDIR}/../meta-tutorial \
-    "
+    BBLAYERS = "${TOPDIR}/../meta-tutorial"
 
-`TOPDIR` is the build directory from which BitBake is running. `BBLAYERS` lists the layers that form this build.
+**meta-tutorial/conf/layer.conf**
 
-#### 4.2.2 Create `meta-tutorial/conf/layer.conf`
-
-Create `$HOME/bbTutorial/meta-tutorial/conf/layer.conf`:
+Each layer needs a `conf/layer.conf` file. For now we create it with this content:
 
     BBPATH .= ":${LAYERDIR}"
     BBFILES += "${LAYERDIR}/recipes-*/*/*.bb"
 
-`LAYERDIR` is the current layer’s directory. `BBPATH` is a colon-separated search path. `BBFILES` is a pattern describing where recipes can be found. There are no recipes yet, but defining the pattern now prepares the layer for Chapter 5.
+**meta-tutorial/classes/base.bbclass and meta-tutorial/conf/bitbake.conf**
 
-#### 4.2.3 Copy `base.bbclass` and `bitbake.conf`
+For now, these files can be taken from the BitBake installation directory. They’re located in the classes and conf folders inside bitbake-2.18.0. Replace /path/to/bitbake-2.18.0 with the directory where you extracted BitBake, then copy them into the tutorial project:
 
-These two files already exist inside the downloaded BitBake folder. Copy them into the tutorial project:
-
-    cp "$BITBAKE_ROOT_DIR/classes/base.bbclass" \
+    cp "/path/to/bitbake-2.18.0/classes/base.bbclass" \
         "$HOME/bbTutorial/meta-tutorial/classes/base.bbclass"
-    cp "$BITBAKE_ROOT_DIR/conf/bitbake.conf" \
+    cp "/path/to/bitbake-2.18.0/conf/bitbake.conf" \
         "$HOME/bbTutorial/meta-tutorial/conf/bitbake.conf"
 
-The copies are:
+#### 4.2.2 Some notes on the created files
 
-    $BITBAKE_ROOT_DIR/classes/base.bbclass
-        -> bbTutorial/meta-tutorial/classes/base.bbclass
-    $BITBAKE_ROOT_DIR/conf/bitbake.conf
-        -> bbTutorial/meta-tutorial/conf/bitbake.conf
+**build/conf/bblayers.conf**
 
-`base.bbclass` provides basic shared BitBake tasks and functions. `bitbake.conf` provides BitBake’s basic variables and default configuration. They must come from BitBake 2.18 so that they match the program being used.
+Add the current working directory to `BBPATH` by assigning it to `TOPDIR` — `TOPDIR` is set internally by BitBake to the current working directory. Initialize `BBFILES` as empty; recipes will be added later. Add the path of our `meta-tutorial` layer to `BBLAYERS` — when it runs, BitBake searches every listed layer directory for further configuration.
 
-> BitBake 2.18’s supplied bitbake.conf already defines CACHE, so no additional cache setting is required.
+**meta-tutorial/conf/layer.conf**
+
+`LAYERDIR` is a variable BitBake passes to the layer it loads; we append this path to `BBPATH`. `BBFILES` tells BitBake where recipes are — we append nothing yet, since we have none, but that changes later. `.=` and `+=` append a value to a variable, without or with a separating space.
+
+**conf/bitbake.conf**
+
+For now we take this file’s variables as they are.
+
+**classes/base.bbclass**
+
+A `.bbclass` file holds shared functionality. Our `base.bbclass` provides some logging functions we’ll use later, and a `build` task that does nothing — not very useful yet, but required, since `build` is the task BitBake runs by default when no other task is specified. We’ll change this task later.
+
+#### 4.2.3 BitBake search path
+
+Some file paths BitBake looks for are relative to `BBPATH`: if we tell BitBake to search for a path, it checks every directory listed in `BBPATH` (which, like `PATH`, can hold several directories separated by `:`).
+
+We’ve added `TOPDIR` and `LAYERDIR` to `BBPATH`, so `classes/base.bbclass` and `conf/bitbake.conf` could live in either — but we put them in `meta-tutorial`. The build directory should never hold general files, only build-specific ones like a `local.conf`, which we’ll use later.
 
 ### 4.3 The first run
 
-Always run BitBake from the build directory:
+In a terminal, change into the build directory we just created — that’s our working directory. We always run BitBake from there, so it can find the relative `conf/bblayers.conf` file.
 
     cd "$HOME/bbTutorial/build"
     bitbake
 
-Expected result:
+If the setup is correct, BitBake reports:
 
     Nothing to do. Use 'bitbake world' to build everything,
     or run 'bitbake --help' for usage information.
 
-This is success. BitBake found and parsed the project, but there is no recipe to build yet.
+Not very useful on its own, but a good start — and a good moment to introduce a useful flag, verbose debug output:
 
-If you run BitBake from `meta-tutorial/conf`, it cannot find the build’s `conf/bblayers.conf`. Return to `$HOME/bbTutorial/build`.
+    bitbake -vDDD world
+
+The output should look similar to this:
+
+    Loading cache: 100%
+    Loaded 0 entries from dependency cache.
+    DEBUG: collating packages for "world"
+    DEBUG: Target list: []
+    NOTE: Resolving any missing task queue dependencies
+    DEBUG: Resolved 0 extra dependencies
+
+You’ll see a stream of NOTE: and DEBUG: lines. -vDDD enables very detailed output, and world asks BitBake to build every available recipe. Since the project has no recipes yet, there are no build tasks to run; the useful part here is observing how BitBake parses the configuration. We add the first recipe in the next chapter.
+
+Notice that BitBake also created a `tmp` directory alongside `conf/`.
 
 ## 5. The first recipe
 
-BitBake needs recipes before it can do useful work. First check the current recipe list:
+BitBake needs recipes before it can do useful work. Check the current recipe list:
 
     cd "$HOME/bbTutorial/build"
     bitbake -s
+    Recipe Name          Latest Version        Preferred Version
+    ===========          ==============        =================
 
-The list is empty because we have not created a recipe yet.
+The list is empty — we haven’t created a recipe yet.
 
 ### 5.1 The cache location
 
-BitBake caches parsed metadata to make later commands faster. BitBake 2.18’s supplied bitbake.conf already contains the required CACHE setting, so there is nothing to add in this step.
+BitBake caches parsed metadata to make later commands faster. BitBake 2.18’s copied `bitbake.conf` already defines `CACHE`, so there is nothing to add here.
 
 ### 5.2 Adding a recipe location to the tutorial layer
 
-BitBake finds recipes using `BBFILES`. We already placed this line in `meta-tutorial/conf/layer.conf`:
+BitBake finds recipes through `BBFILES`, which we already set in `meta-tutorial/conf/layer.conf`:
 
     BBFILES += "${LAYERDIR}/recipes-*/*/*.bb"
 
-It means: look inside directories named `recipes-*`, then inside a recipe directory, and load files ending in `.bb`.
+This means: look inside directories named `recipes-*`, then inside a recipe directory, and load files ending in `.bb`.
 
-### 5.3 Create the first recipe and task
+5.3 Create the first recipe and task
 
-Recipe files use the form `name_version.bb`. For `first_0.1.bb`, `first` is the recipe name, `0.1` is its version, and `.bb` means it is a BitBake recipe.
-
-Create the directory:
+Recipe files follow the pattern `name_version.bb`. Create the directory:
 
     mkdir -p "$HOME/bbTutorial/meta-tutorial/recipes-tutorial/first"
 
 Create `$HOME/bbTutorial/meta-tutorial/recipes-tutorial/first/first_0.1.bb`:
+
+
+
 
     DESCRIPTION = "I am the first recipe"
     PR = "r1"
@@ -308,31 +240,33 @@ Create `$HOME/bbTutorial/meta-tutorial/recipes-tutorial/first/first_0.1.bb`:
         echo "first: some shell script running as build"
     }
 
-The recipe defines one shell task named `do_build`. Now list the recipes and build `first`:
+List the recipes and build `first`:
 
     cd "$HOME/bbTutorial/build"
     bitbake -s
     bitbake first
 
-`bitbake -s` should list `first :0.1-r1`. The final build summary should say that all attempted tasks succeeded.
+`bitbake -s` now shows:
 
-Inspect the task log:
+    Recipe Name          Latest Version        Preferred Version
+    ===========          ==============        =================
+    first                       :0.1-r1
 
-    find tmp/work -path '*first*' -name 'log.do_build*' -print
+and the build summary should say every attempted task succeeded. The task log is at:
 
-One log should contain:
+    build/tmp/work/first-0.1-r1/temp/log.do_build
 
+and should contain:
+
+    DEBUG: Executing shell function do_build
     first: some shell script running as build
+    DEBUG: Shell function do_build finished
 
 ## 6. Classes and functions
 
-### 6.1 Why use a class?
+### 6.1 Create the mybuild class
 
-A `.bbclass` contains reusable metadata. Instead of copying the same build task into multiple recipes, define it once and let recipes inherit it.
-
-### 6.2 Create `mybuild.bbclass`
-
-Create `$HOME/bbTutorial/meta-tutorial/classes/mybuild.bbclass`:
+A `.bbclass` holds reusable metadata, so a task doesn’t have to be copied into every recipe that needs it. Create `$HOME/bbTutorial/meta-tutorial/classes/mybuild.bbclass`:
 
     addtask build
 
@@ -342,22 +276,11 @@ Create `$HOME/bbTutorial/meta-tutorial/classes/mybuild.bbclass`:
 
     EXPORT_FUNCTIONS do_build
 
-`EXPORT_FUNCTIONS do_build` exposes the class-specific `mybuild_do_build` implementation as `do_build` to metadata that inherits the class.
+`EXPORT_FUNCTIONS do_build` exposes `mybuild_do_build` as `do_build` to any recipe that inherits the class.
 
-### 6.3 Complete the layer collection metadata
+### 
 
-Replace `$HOME/bbTutorial/meta-tutorial/conf/layer.conf` with:
-
-    BBPATH .= ":${LAYERDIR}"
-    BBFILES += "${LAYERDIR}/recipes-*/*/*.bb"
-
-    BBFILE_COLLECTIONS += "tutorial"
-    BBFILE_PATTERN_tutorial = "^${LAYERDIR}/"
-    BBFILE_PRIORITY_tutorial = "5"
-
-The suffix `tutorial` connects the collection name to its pattern and priority. BitBake 2.18 will warn that this collection has no declared layer-series compatibility. That warning is expected here and will be fixed in Chapter 7.
-
-### 6.4 Create the second recipe
+### 6.2 Use mybuild with the second recipe
 
     mkdir -p "$HOME/bbTutorial/meta-tutorial/recipes-tutorial/second"
 
@@ -368,8 +291,8 @@ Create `$HOME/bbTutorial/meta-tutorial/recipes-tutorial/second/second_1.0.bb`:
 
     inherit mybuild
 
-    def pyfunc(obj):
-        print(dir(obj))
+    def pyfunc(o):
+        print(dir(o))
 
     python do_mypatch () {
         bb.note("running mypatch")
@@ -378,57 +301,48 @@ Create `$HOME/bbTutorial/meta-tutorial/recipes-tutorial/second/second_1.0.bb`:
 
     addtask mypatch before do_build
 
-This recipe demonstrates three kinds of reuse:
+This recipe shows three kinds of reuse: `inherit mybuild` pulls in the class’s metadata, `do_mypatch` is a Python task, and `pyfunc` is a plain Python helper the task calls. `d` is BitBake’s datastore — the variables visible in the current metadata context.
 
-- `inherit mybuild` imports class metadata.
-- `do_mypatch` is a BitBake Python task.
-- `pyfunc` is a regular Python helper called by the task.
-
-`d` is BitBake’s datastore, which contains variables visible in the current metadata context.
-
-### 6.5 Explore and execute tasks
+### 6.3 Exploring recipes and tasks
 
     cd "$HOME/bbTutorial/build"
     bitbake -s
-    bitbake -c listtasks second | grep -E 'do_build|do_mypatch'
+
+should now show:
+
+    Recipe Name          Latest Version        Preferred Version
+    ===========          ==============        =================
+    first                       :0.1-r1
+    second                      :1.0-r1
+
+List a recipe’s tasks with:
+
+    bitbake -c listtasks second
+
+### 6.4 Executing tasks or building the world
+
     bitbake second
     bitbake -c mypatch second
     bitbake world
 
-Important forms:
-
-- `bitbake second`: run the default build task and required predecessors.
-- `bitbake -c mypatch second`: explicitly run `do_mypatch`.
-- `bitbake world`: build all recipes visible to this configuration.
-
-Task logs are under `build/tmp/work/<recipe>/temp/` in this standalone project.
+`bitbake second` runs the default build task and its predecessors; `-c mypatch` runs `do_mypatch` explicitly; `bitbake world` builds every recipe visible to the configuration. Task logs live under `build/tmp/work/<recipe>-<version>-<revision>/temp/`.
 
 ## 7. BitBake layers
 
-### 7.1 Add a second layer
+A typical BitBake project has more than one layer, each covering a specific topic, and different build targets can combine layers differently. Layers let you extend, configure, and even partially override content from another layer, which is what makes them reusable.
 
-Create its configuration directory:
+### 7.1 Adding an additional layer
+
+Create its directory:
 
     mkdir -p "$HOME/bbTutorial/meta-two/conf"
 
 Create `$HOME/bbTutorial/meta-two/conf/layer.conf`:
 
     BBPATH .= ":${LAYERDIR}"
-    BBFILES += "${LAYERDIR}/recipes-*/*/*.bb \
-                ${LAYERDIR}/recipes-*/*/*.bbappend"
+    BBFILES += "${LAYERDIR}/recipes-*/*/*.bb"
 
-    BBFILE_COLLECTIONS += "two"
-    BBFILE_PATTERN_two = "^${LAYERDIR}/"
-    BBFILE_PRIORITY_two = "5"
-    LAYERVERSION_two = "1"
-
-    LAYERDEPENDS_two = "tutorial"
-
-`LAYERDEPENDS_two = "tutorial"` means `meta-two` requires the layer collection named `tutorial`.
-
-### 7.2 Add the layer to `bblayers.conf`
-
-Update `$HOME/bbTutorial/build/conf/bblayers.conf`:
+Then add it to `$HOME/bbTutorial/build/conf/bblayers.conf`:
 
     BBPATH := "${TOPDIR}"
     BBFILES ?= ""
@@ -437,43 +351,72 @@ Update `$HOME/bbTutorial/build/conf/bblayers.conf`:
         ${TOPDIR}/../meta-two \
     "
 
-### 7.3 Declare layer-series compatibility
+### 7.2 The bitbake-layers command
 
-This standalone project needs a consistent core-series name. Use the correctly spelled name `bitbakeguide`.
+    bitbake-layers show-layers
 
-Append to `meta-tutorial/conf/layer.conf`:
+Other useful subcommands: `show-recipes`, `show-cross-depends`, `show-appends`, `flatten`, `show-overlayed`.
+
+### 7.3 Extending the layer configuration
+
+Add to `meta-tutorial/conf/layer.conf`:
+
+    BBFILE_COLLECTIONS += "tutorial"
+    BBFILE_PATTERN_tutorial = "^${LAYERDIR}/"
+    BBFILE_PRIORITY_tutorial = "5"
+
+Add to `meta-two/conf/layer.conf`:
+
+    BBFILE_COLLECTIONS += "two"
+    BBFILE_PATTERN_two = "^${LAYERDIR}/"
+    BBFILE_PRIORITY_two = "5"
+    LAYERVERSION_two = "1"
+
+bitbake-layers show-layers should now list both layer collections with priority 5:
+
+    layer       path                                  priority
+    =============================================================
+    tutorial    /home/user/bbTutorial/meta-tutorial    5
+    two         /home/user/bbTutorial/meta-two         5
+
+At this stage, BitBake can also warn that no .bb files match BBFILE_PATTERN_two. That is expected because meta-two is still empty; Chapter 8 adds its first recipe.
+
+### 7.4 Layer compatibility
+
+At this point BitBake 2.18 will warn that these layers have no declared layer-series compatibility.
+
+#### 7.4.1 Layer series core name
+
+Add to `meta-tutorial/conf/layer.conf`:
 
     LAYERSERIES_CORENAMES = "bitbakeguide"
+
+#### 7.4.2 Layer series compatibility
+
+Also in `meta-tutorial/conf/layer.conf`:
 
     LAYERVERSION_tutorial = "1"
     LAYERSERIES_COMPAT_tutorial = "bitbakeguide"
 
-Append to `meta-two/conf/layer.conf`:
+Add to `meta-two/conf/layer.conf`:
 
     LAYERSERIES_COMPAT_two = "bitbakeguide"
 
-The same project-defined name, bitbakeguide, must be used in LAYERSERIES_CORENAMES and the LAYERSERIES_COMPAT entries.
+The project-defined series name must match in LAYERSERIES_CORENAMES and each layer’s LAYERSERIES_COMPAT entry.
 
-### 7.4 Inspect layers
+### 7.5 Layer dependencies
 
-    cd "$HOME/bbTutorial/build"
-    bitbake-layers show-layers
-    bitbake-layers show-recipes
+Add to `meta-two/conf/layer.conf`:
 
-Both `tutorial` and `two` should be listed with priority `5`. At this exact stage, BitBake warns that no `.bb` files match `BBFILE_PATTERN_two` because `meta-two` is intentionally empty. Chapter 8 adds a recipe to it.
+    LAYERDEPENDS_two = "tutorial"
 
-Useful subcommands include:
-
-- `show-layers`: configured layers and priorities.
-- `show-recipes`: recipes and providers.
-- `show-appends`: append files and their matching recipes.
-- `show-overlayed`: recipes hidden by higher-priority providers.
+This tells BitBake that `meta-two` requires the layer collection named `tutorial`.
 
 ## 8. Share and reuse configurations
 
-### 8.1 Class inheritance
+Besides classes and configuration files, BitBake lets you reuse and extend metadata through class inheritance, `.bbappend` files, and include files. This chapter adds a class in `meta-two` that builds a configure-then-build chain on top of `mybuild`, then extends an existing recipe from another layer.
 
-Create the directory:
+### 8.1 Class inheritance
 
     mkdir -p "$HOME/bbTutorial/meta-two/classes"
 
@@ -488,30 +431,27 @@ Create `$HOME/bbTutorial/meta-two/classes/confbuild.bbclass`:
     addtask do_configure before do_build
     EXPORT_FUNCTIONS do_configure
 
-This class inherits the build behavior from `mybuild` and adds a configure task before it.
-
 Create the third recipe:
 
     mkdir -p "$HOME/bbTutorial/meta-two/recipes-base/third"
 
-Create `$HOME/bbTutorial/meta-two/recipes-base/third/third_0.1.2.bb`:
+`$HOME/bbTutorial/meta-two/recipes-base/third/third_0.1.2.bb`:
 
     DESCRIPTION = "I am the third recipe"
     PR = "r1"
 
     inherit confbuild
-
-Build it:
-
     cd "$HOME/bbTutorial/build"
     bitbake third
 
 Both `do_configure` and `do_build` should succeed.
 
-### 8.2 Extend a recipe with `.bbappend`
+### 8.2 bbappend files
 
-Create:
+Update `meta-two/conf/layer.conf` so it also picks up append files:
 
+    BBFILES += "${LAYERDIR}/recipes-*/*/*.bb \
+                ${LAYERDIR}/recipes-*/*/*.bbappend"
     mkdir -p "$HOME/bbTutorial/meta-two/recipes-base/first"
 
 Create `$HOME/bbTutorial/meta-two/recipes-base/first/first_0.1.bbappend`:
@@ -522,50 +462,48 @@ Create `$HOME/bbTutorial/meta-two/recipes-base/first/first_0.1.bbappend`:
 
     addtask patch before do_build
 
-The root filename matches `first_0.1.bb`, so BitBake merges the append metadata into that recipe. This is how one layer can customize a recipe supplied by another without editing the original layer.
-
-Verify the match and task:
+Its filename matches `first_0.1.bb`, so BitBake merges this into that recipe — this is how one layer customizes a recipe owned by another without editing the original.
 
     cd "$HOME/bbTutorial/build"
     bitbake-layers show-appends
-    bitbake -c listtasks first | grep -E 'do_patch|do_build'
+    bitbake -c listtasks first
     bitbake first
 
-### 8.3 `include` versus `require`
+### 8.3 Include files
 
-Both directives search relative to `BBPATH`:
+Both directives search relative to `BBPATH`: `include file` parses it if present and continues if it’s absent; `require file` parses it and fails if it’s absent.
 
-- `include file`: parse it if present; continue if it is absent.
-- `require file`: parse it and fail if it is absent.
+#### 8.3.1 Add a local.conf for inclusion
 
-Append to `$HOME/bbTutorial/meta-tutorial/conf/bitbake.conf`:
+Add to `meta-tutorial/conf/bitbake.conf`:
 
     require local.conf
     include conf/might_exist.conf
-
-Now run:
-
     cd "$HOME/bbTutorial/build"
     bitbake first
 
-BitBake should report that required `local.conf` is missing. Fix it by creating an empty build-local configuration:
+BitBake reports that the required `local.conf` is missing. Create an empty one:
 
     touch "$HOME/bbTutorial/build/local.conf"
     bitbake first
 
-The missing optional `conf/might_exist.conf` does not cause an error.
+The missing, optional `conf/might_exist.conf` never causes an error.
 
 ## 9. Using variables
 
-### 9.1 Global variable
+Variables are what make BitBake recipes and classes configurable instead of hard-coded: a class can define a task that reads a variable, and each recipe that inherits it supplies its own value instead of editing the class itself.
 
-Put this in `$HOME/bbTutorial/build/local.conf`:
+### 9.1 Global variables
+
+#### 9.1.1 Define global variables
+
+Add to `$HOME/bbTutorial/build/local.conf`:
 
     MYVAR = "hello from MYVAR"
 
-Spaces around `=` matter for clean modern style. `MYVAR="..."` parses in some contexts but BitBake 2.18 warns about missing whitespace.
+BitBake 2.18 warns if there is no whitespace around `=`, so keep the spaces.
 
-Create the recipe directory:
+#### 9.1.2 Accessing global variables
 
     mkdir -p "$HOME/bbTutorial/meta-two/recipes-vars/myvar"
 
@@ -584,23 +522,17 @@ Create `$HOME/bbTutorial/meta-two/recipes-vars/myvar/myvar_0.1.bb`:
 
     addtask myvar_py before do_build
 
-Shell-style BitBake functions expand a variable as \${MYVAR}. Python tasks read it from the datastore with d.getVar('MYVAR').
-
-Build and inspect:
+Shell tasks expand a variable as `${MYVAR}`; Python tasks read it from the datastore with `d.getVar()`.
 
     cd "$HOME/bbTutorial/build"
     bitbake myvar
-    grep -RhE 'myvar_py:|myvar_sh:' \
-        tmp/work/*/temp/log.do_* 2>/dev/null
 
-Expected messages:
+Its log, under `build/tmp/work/myvar-0.1-r1/temp/`, should contain:
 
     myvar_py:hello from MYVAR
     myvar_sh: hello from MYVAR
 
-Each can appear twice because BitBake can keep a stable log name and a numbered task log.
-
-### 9.2 Recipe-local variable
+### 9.2 Local variables
 
 Create `$HOME/bbTutorial/meta-two/classes/varbuild.bbclass`:
 
@@ -611,96 +543,26 @@ Create `$HOME/bbTutorial/meta-two/classes/varbuild.bbclass`:
     addtask build
     EXPORT_FUNCTIONS do_build
 
-The class knows the variable name but does not choose its value.
-
-Create:
+The class knows the variable’s name but not its value.
 
     mkdir -p "$HOME/bbTutorial/meta-two/recipes-vars/varbuild"
 
 Create `$HOME/bbTutorial/meta-two/recipes-vars/varbuild/varbuild_0.1.bb`:
 
-    DESCRIPTION = "Demonstrate a recipe configuring a class task"
+    DESCRIPTION = "Demonstrate variable usage \
+        for setting up a class task"
     PR = "r1"
 
     BUILDARGS = "my build arguments"
 
     inherit varbuild
-
-Here the recipe provides a recipe-local value and the reusable class consumes it. This is a central BitBake pattern: classes define general processes while recipes configure those processes through variables.
-
-Run:
-
     cd "$HOME/bbTutorial/build"
     bitbake varbuild
-    grep -RhF 'build with args: my build arguments' \
-        tmp/work/*/temp/log.do_* 2>/dev/null
 
-### 9.3 Final check
+Its log should contain:
 
-**List recipes**
-
-    cd "$HOME/bbTutorial/build"
-    bitbake -s
-
-The final project should provide:
-
-    first
-    myvar
-    second
-    third
-    varbuild
-
-**Inspect layers and appends**
-
-    bitbake-layers show-layers
-    bitbake-layers show-appends
-
-The layers should be `tutorial` and `two`. The append listing should connect `first_0.1.bbappend` to `first_0.1.bb`.
-
-**Build everything**
-
-    bitbake world
-
-In the validated final project, nine tasks were attempted and all succeeded on a clean run. The exact “didn’t need to be rerun” count can differ because it depends on your existing cache and stamps.
-
-**Final layout**
-
-    bbTutorial/
-    ├── build/
-    │   ├── conf/bblayers.conf
-    │   └── local.conf
-    ├── meta-tutorial/
-    │   ├── classes/
-    │   │   ├── base.bbclass
-    │   │   └── mybuild.bbclass
-    │   ├── conf/
-    │   │   ├── bitbake.conf
-    │   │   └── layer.conf
-    │   └── recipes-tutorial/
-    │       ├── first/first_0.1.bb
-    │       └── second/second_1.0.bb
-    └── meta-two/
-        ├── classes/
-        │   ├── confbuild.bbclass
-        │   └── varbuild.bbclass
-        ├── conf/layer.conf
-        ├── recipes-base/
-        │   ├── first/first_0.1.bbappend
-        │   └── third/third_0.1.2.bb
-        └── recipes-vars/
-            ├── myvar/myvar_0.1.bb
-            └── varbuild/varbuild_0.1.bb
+    build with args: my build arguments
 
 ## 10. Summary
 
-You have used BitBake as a standalone task engine and practiced:
-
-- Project and build-directory layout.
-- Configuration and search paths.
-- Recipes, classes, tasks, and task ordering.
-- Shell and Python metadata functions.
-- Layer collections, priorities, compatibility, and dependencies.
-- Recipe extension with `.bbappend`.
-- Required and optional includes.
-- Global and recipe-local variables.
-- Recipe, layer, task, append, and log inspection.
+This tutorial used BitBake as a standalone task engine to practice: what BitBake actually does; the build/layer project layout; recipes, classes, tasks, and task ordering; multiple layers and how they relate to each other; the five metadata file types; and global and recipe-local variables.
