@@ -10,7 +10,7 @@ The tutorial starts with the smallest possible BitBake project and introduces re
 
 ## Read the Tutorial
 
-[Read the complete tutorial](index.md)
+[Read the complete tutorial](A-Practical-Guide-to-BitBake-2026.md)
 
 ## Practical Examples
 
