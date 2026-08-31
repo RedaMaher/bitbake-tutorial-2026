@@ -29,11 +29,8 @@ The tutorial builds the smallest possible project and extends it step by step, t
 
 ### 1.3 Acknowledgments
 
-Thanks to Tritech (http://tritech.se) for the time to prepare the first version of this document back in 2014 — without it, this tutorial wouldn’t exist. Thanks also to everyone who has reported issues and typos over the years.
+The learning sequence is inspired by Harald Achitz’s original “A Practical Guide to BitBake.” Issues for the accompanying example repository can be reported at the [BitBake guide issue tracker](https://bitbucket.org/a4z/bitbakeguide/issues).
 
-### 1.4 Feedback
-
-Bugs, unclear sections, typos, or suggestions can be reported at the [issue tracker](https://bitbucket.org/a4z/bitbakeguide/issues) — no registration required.
 
 ## 2. BitBake
 
