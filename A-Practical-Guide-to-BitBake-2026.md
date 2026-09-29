@@ -22,6 +22,7 @@
 16. [Stamps, signatures, and incremental builds](#16-stamps-signatures-and-incremental-builds)
 17. [Providers and selecting recipes](#17-providers-and-selecting-recipes)
 18. [Events, hooks, and diagnostics](#18-events-hooks-and-diagnostics)
+19. [Multiple configurations](#19-multiple-configurations)
 21. [Summary](#21-summary)
 
 ## 1. Preface
@@ -614,6 +615,11 @@ Snapshot: [ch17](ch17).
 
 [Continue with Chapter 18](docs/ch18.md): event-handler contexts, task hooks,
 logging, locks, explicit failures and recovery. Snapshot: [ch18](ch18).
+
+## 19. Multiple configurations
+
+[Continue with Chapter 19](docs/ch19.md): isolated configuration datastores
+and a verified artifact dependency across configurations. Snapshot: [ch19](ch19).
 
 ## 21. Summary
 

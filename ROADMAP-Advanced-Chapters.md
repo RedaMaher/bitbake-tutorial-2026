@@ -73,7 +73,7 @@ standalone example rather than claiming BitBake provides that class or task.
   - Distinguish parse, cooker, and worker contexts; exercise logging and a
     deliberate failure with recovery.
 
-- [ ] **Ch 19 — Multiple configurations**
+- [x] **Ch 19 — Multiple configurations** ([chapter](docs/ch19.md), [snapshot](ch19))
   - Use `BBMULTICONFIG`, separate output directories, and `[mcdepends]`.
   - Verify an artifact crossing configuration boundaries without a toolchain.
 

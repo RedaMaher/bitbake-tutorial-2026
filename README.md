@@ -31,6 +31,7 @@ The chapter directories contain the completed project at each stage of the tutor
 * [ch16](ch16) — Stamps, signatures, and incremental builds ([chapter](docs/ch16.md))
 * [ch17](ch17) — Providers and selecting recipes ([chapter](docs/ch17.md))
 * [ch18](ch18) — Events, hooks, and diagnostics ([chapter](docs/ch18.md))
+* [ch19](ch19) — Multiple configurations ([chapter](docs/ch19.md))
 
 Each chapter contains its own `build` directory and the layers required for that stage.
 
