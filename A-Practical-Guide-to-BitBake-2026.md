@@ -17,6 +17,7 @@
 11. [Task dependencies and ordering](#11-task-dependencies-and-ordering)
 12. [Fetching and unpacking sources](#12-fetching-and-unpacking-sources)
 13. [Patching sources](#13-patching-sources)
+14. [Configuring, compiling, and installing](#14-configuring-compiling-and-installing)
 21. [Summary](#21-summary)
 
 ## 1. Preface
@@ -582,6 +583,11 @@ Snapshot: [ch12](ch12).
 
 [Continue with Chapter 13](docs/ch13.md): an explicit patch task and
 cross-layer file search. Snapshot: [ch13](ch13).
+
+## 14. Configuring, compiling, and installing
+
+[Continue with Chapter 14](docs/ch14.md): a host compiler, out-of-tree build,
+and staged installation driven by a tutorial class. Snapshot: [ch14](ch14).
 
 ## 21. Summary
 

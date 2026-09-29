@@ -38,7 +38,7 @@ standalone example rather than claiming BitBake provides that class or task.
   - Distinguish BitBake's fetch/parse behavior from patch conventions supplied
     by OpenEmbedded-Core.
 
-- [ ] **Ch 14 — Configuring, compiling, and installing**
+- [x] **Ch 14 — Configuring, compiling, and installing** ([chapter](docs/ch14.md), [snapshot](ch14))
   - Define the `do_configure` → `do_compile` → `do_install` task chain in a
     tutorial class, using a tiny host-compiled program.
   - Show `S`, `B`, `WORKDIR`, and a destination directory for output; inspect
