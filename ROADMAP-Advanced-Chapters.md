@@ -30,7 +30,7 @@ standalone example rather than claiming BitBake provides that class or task.
   - Start with a local source and then demonstrate a pinned remote archive or
     Git revision, including checksum/revision checks and an offline option.
 
-- [ ] **Ch 13 — Patching sources**
+- [x] **Ch 13 — Patching sources** ([chapter](docs/ch13.md), [snapshot](ch13))
   - Add an explicitly ordered `do_patch` task to a fetched/unpacked example.
   - Explain how `file://` sources are found through `FILESPATH`, and verify
     the patch changes the working tree; introduce search-path customization

@@ -16,6 +16,7 @@
 10. [Overrides, operators, and task flags](#10-overrides-operators-and-task-flags)
 11. [Task dependencies and ordering](#11-task-dependencies-and-ordering)
 12. [Fetching and unpacking sources](#12-fetching-and-unpacking-sources)
+13. [Patching sources](#13-patching-sources)
 21. [Summary](#21-summary)
 
 ## 1. Preface
@@ -576,6 +577,11 @@ and explicit dependencies across recipes. Snapshot: [ch11](ch11).
 [Continue with Chapter 12](docs/ch12.md): explicit fetch/unpack tasks, local
 sources, a checksum-pinned remote archive, and offline operation.
 Snapshot: [ch12](ch12).
+
+## 13. Patching sources
+
+[Continue with Chapter 13](docs/ch13.md): an explicit patch task and
+cross-layer file search. Snapshot: [ch13](ch13).
 
 ## 21. Summary
 

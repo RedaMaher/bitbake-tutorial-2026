@@ -25,6 +25,7 @@ The chapter directories contain the completed project at each stage of the tutor
 * [ch10](ch10) — Overrides, operators, and task flags ([chapter](docs/ch10.md))
 * [ch11](ch11) — Task dependencies and ordering ([chapter](docs/ch11.md))
 * [ch12](ch12) — Fetching and unpacking sources ([chapter](docs/ch12.md))
+* [ch13](ch13) — Patching sources ([chapter](docs/ch13.md))
 
 Each chapter contains its own `build` directory and the layers required for that stage.
 
