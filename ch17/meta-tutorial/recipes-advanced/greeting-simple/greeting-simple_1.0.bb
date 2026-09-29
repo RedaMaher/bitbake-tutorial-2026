@@ -1,0 +1,1 @@
+require greeting-simple.inc

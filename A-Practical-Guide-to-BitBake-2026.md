@@ -20,6 +20,7 @@
 14. [Configuring, compiling, and installing](#14-configuring-compiling-and-installing)
 15. [Task outputs and cross-recipe dependencies](#15-task-outputs-and-cross-recipe-dependencies)
 16. [Stamps, signatures, and incremental builds](#16-stamps-signatures-and-incremental-builds)
+17. [Providers and selecting recipes](#17-providers-and-selecting-recipes)
 21. [Summary](#21-summary)
 
 ## 1. Preface
@@ -601,6 +602,12 @@ Snapshot: [ch15](ch15).
 
 [Continue with Chapter 16](docs/ch16.md): measured task reuse, file checksums,
 explicit variable dependencies and signature comparisons. Snapshot: [ch16](ch16).
+
+## 17. Providers and selecting recipes
+
+[Continue with Chapter 17](docs/ch17.md): virtual targets, implementation and
+version preferences, ambiguity and missing-provider diagnostics.
+Snapshot: [ch17](ch17).
 
 ## 21. Summary
 

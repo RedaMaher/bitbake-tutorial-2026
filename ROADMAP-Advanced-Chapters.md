@@ -60,7 +60,7 @@ standalone example rather than claiming BitBake provides that class or task.
     shared-state cache implemented by OpenEmbedded-Core; do not promise an
     sstate cache in this minimal project.
 
-- [ ] **Ch 17 — Providers and selecting recipes**
+- [x] **Ch 17 — Providers and selecting recipes** ([chapter](docs/ch17.md), [snapshot](ch17))
   - Demonstrate `PROVIDES`, `PREFERRED_PROVIDER`, and `PREFERRED_VERSION` with
     two small standalone implementations of the same target.
   - Inspect how BitBake resolves a virtual target and handles ambiguity or
