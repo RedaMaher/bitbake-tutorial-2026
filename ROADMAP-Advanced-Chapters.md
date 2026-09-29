@@ -11,7 +11,7 @@ tasks, and variables. Where a concept normally uses an OpenEmbedded-Core class,
 the tutorial must implement the small amount of task wiring needed for the
 standalone example rather than claiming BitBake provides that class or task.
 
-- [ ] **Ch 10 — Overrides, operators, and task flags**
+- [x] **Ch 10 — Overrides, operators, and task flags** ([chapter](docs/ch10.md), [snapshot](ch10))
   - Exercise `OVERRIDES`, `:append`, `:prepend`, `:remove`, and assignment timing
     with `bitbake -e` and a small runnable recipe.
   - Explore `[nostamp]`, `[dirs]`, and `[cleandirs]` by rerunning tasks and
@@ -68,7 +68,31 @@ standalone example rather than claiming BitBake provides that class or task.
   - Avoid OE-Core-specific `native`/`nativesdk` behavior unless a separate,
     explicitly implemented example is added.
 
-When these chapters are written, move the current Chapter 10 summary to
-Chapter 18 and update the table of contents and README. Keep the tutorial
-focused on learning BitBake; a Yocto distribution or bootable image is not a
-goal of this roadmap.
+- [ ] **Ch 18 — Events, hooks, and diagnostics**
+  - Add task pre/post functions and filtered event handlers.
+  - Distinguish parse, cooker, and worker contexts; exercise logging and a
+    deliberate failure with recovery.
+
+- [ ] **Ch 19 — Multiple configurations**
+  - Use `BBMULTICONFIG`, separate output directories, and `[mcdepends]`.
+  - Verify an artifact crossing configuration boundaries without a toolchain.
+
+- [ ] **Ch 20 — Advanced metadata and layer selection**
+  - Exercise deferred inheritance, custom `BBCLASSEXTEND` variants, masking,
+    and conditional layer metadata.
+  - Keep recipe cloning distinct from OE-Core's native/nativesdk classes.
+
+## Review decisions
+
+The original eight chapters are retained. The three additional chapters close
+important standalone gaps; the summary moves to **Chapter 21**. Chapter 12 is
+offline-first and makes remote access opt-in. Chapter 15 implements actual task
+relationships before introducing dependency flags. Chapter 16 explicitly
+selects a hashing policy rather than assuming an OE-Core configuration.
+
+Every implementation includes a cumulative `chNN/` snapshot, linked chapter
+text, and a runnable `tests/check-chNN.sh`. Each chapter is a separate commit.
+This covers the major user-facing concepts, not every fetcher backend, internal
+API, or production policy. Hash equivalence, setscene/sstate policy, packaging,
+sysroots and cross-toolchains are distinguished from this minimal build, not
+simulated as a Yocto distribution or bootable image.

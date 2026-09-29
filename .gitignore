@@ -1,0 +1,9 @@
+/ch*/build/tmp/
+/ch*/build/tmp-*/
+/ch*/build/bitbake-cookerdaemon.log
+/ch*/build/bitbake.lock
+/ch*/build/bitbake.sock
+/ch*/build/hashserve.sock
+/ch*/build/*.dot
+/ch*/build/pn-buildlist
+/ch*/build/*.log

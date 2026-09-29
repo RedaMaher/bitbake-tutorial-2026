@@ -14,7 +14,7 @@ The tutorial starts with the smallest possible BitBake project and introduces re
 
 ## Practical Examples
 
-The `chapters` directory contains the completed project at each stage of the tutorial:
+The chapter directories contain the completed project at each stage of the tutorial:
 
 * `ch04` — Minimal BitBake project
 * `ch05` — First recipe
@@ -22,6 +22,7 @@ The `chapters` directory contains the completed project at each stage of the tut
 * `ch07` — Multiple layers
 * `ch08` — Class inheritance, append files, and includes
 * `ch09` — Global and recipe-local variables
+* [ch10](ch10) — Overrides, operators, and task flags ([chapter](docs/ch10.md))
 
 Each chapter contains its own `build` directory and the layers required for that stage.
 
@@ -32,7 +33,7 @@ First install BitBake 2.18.0 as explained in the tutorial.
 You can then enter a chapter’s build directory and run BitBake:
 
 ```bash
-cd chapters/ch05/build
+cd ch05/build
 bitbake -s
 bitbake first
 ```
@@ -43,7 +44,7 @@ The optional `bbenv.include` file can configure the current terminal when BitBak
 
 ```bash
 export BITBAKE_ROOT_DIR=/path/to/bitbake-2.18.0
-source chapters/bbenv.include
+source bbenv.include
 ```
 
 ## Acknowledgment

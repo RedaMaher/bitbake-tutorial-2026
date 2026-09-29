@@ -13,7 +13,8 @@
 7.  [BitBake layers](#7-bitbake-layers)
 8.  [Share and reuse configurations](#8-share-and-reuse-configurations)
 9.  [Using variables](#9-using-variables)
-10. [Summary](#10-summary)
+10. [Overrides, operators, and task flags](#10-overrides-operators-and-task-flags)
+21. [Summary](#21-summary)
 
 ## 1. Preface
 
@@ -557,6 +558,12 @@ Its log should contain:
 
     build with args: my build arguments
 
-## 10. Summary
+## 10. Overrides, operators, and task flags
+
+[Continue with Chapter 10](docs/ch10.md): assignment timing, conditional
+overrides, anonymous Python, and task directory/stamp flags. The runnable
+snapshot is [ch10](ch10).
+
+## 21. Summary
 
 This tutorial used BitBake as a standalone task engine to practice: what BitBake actually does; the build/layer project layout; recipes, classes, tasks, and task ordering; multiple layers and how they relate to each other; the five metadata file types; and global and recipe-local variables.
