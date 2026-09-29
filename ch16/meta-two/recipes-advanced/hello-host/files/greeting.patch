@@ -1,0 +1,10 @@
+--- a/hello.c
++++ b/hello.c
+@@ -2,6 +2,6 @@
+ 
+ int main(void)
+ {
+-    puts("Hello before patch.");
++    puts("Hello from standalone BitBake.");
+     return 0;
+ }

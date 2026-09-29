@@ -13,7 +13,18 @@
 7.  [BitBake layers](#7-bitbake-layers)
 8.  [Share and reuse configurations](#8-share-and-reuse-configurations)
 9.  [Using variables](#9-using-variables)
-10. [Summary](#10-summary)
+10. [Overrides, operators, and task flags](#10-overrides-operators-and-task-flags)
+11. [Task dependencies and ordering](#11-task-dependencies-and-ordering)
+12. [Fetching and unpacking sources](#12-fetching-and-unpacking-sources)
+13. [Patching sources](#13-patching-sources)
+14. [Configuring, compiling, and installing](#14-configuring-compiling-and-installing)
+15. [Task outputs and cross-recipe dependencies](#15-task-outputs-and-cross-recipe-dependencies)
+16. [Stamps, signatures, and incremental builds](#16-stamps-signatures-and-incremental-builds)
+17. [Providers and selecting recipes](#17-providers-and-selecting-recipes)
+18. [Events, hooks, and diagnostics](#18-events-hooks-and-diagnostics)
+19. [Multiple configurations](#19-multiple-configurations)
+20. [Advanced metadata and layer selection](#20-advanced-metadata-and-layer-selection)
+21. [Summary](#21-summary)
 
 ## 1. Preface
 
@@ -21,7 +32,10 @@
 
 BitBake is used mainly by OpenEmbedded and the Yocto Project to build Linux distributions, and it has a fairly steep learning curve. This tutorial exists to flatten that curve.
 
-It does not try to cover everything about BitBake — that isn’t really possible — but it explains the fundamentals well enough that you can start writing your own recipes.
+It covers the major user-facing BitBake concepts through runnable standalone
+examples, from the smallest project to signatures, providers, events and
+multiconfig. It is not an exhaustive catalog of every variable, fetcher backend
+or internal API; the versioned manual remains the reference for those details.
 
 ### 1.2 Target of this tutorial
 
@@ -521,9 +535,12 @@ Shell tasks expand a variable as `${MYVAR}`; Python tasks read it from the datas
     cd "$HOME/bbTutorial/build"
     bitbake myvar
 
-Its log, under `build/tmp/work/myvar-0.1-r1/temp/`, should contain:
+Each task writes its own log file under `build/tmp/work/myvar-0.1-r1/temp/`: `log.do_myvar_py` should contain
 
     myvar_py:hello from MYVAR
+
+and `log.do_build` should contain
+
     myvar_sh: hello from MYVAR
 
 ### 9.2 Local variables
@@ -557,6 +574,91 @@ Its log should contain:
 
     build with args: my build arguments
 
-## 10. Summary
+## 10. Overrides, operators, and task flags
 
-This tutorial used BitBake as a standalone task engine to practice: what BitBake actually does; the build/layer project layout; recipes, classes, tasks, and task ordering; multiple layers and how they relate to each other; the five metadata file types; and global and recipe-local variables.
+[Continue with Chapter 10](docs/ch10.md): assignment timing, conditional
+overrides, anonymous Python, and task directory/stamp flags. The runnable
+snapshot is [ch10](ch10).
+
+## 11. Task dependencies and ordering
+
+[Continue with Chapter 11](docs/ch11.md): task registration, graph inspection,
+and explicit dependencies across recipes. Snapshot: [ch11](ch11).
+
+## 12. Fetching and unpacking sources
+
+[Continue with Chapter 12](docs/ch12.md): explicit fetch/unpack tasks, local
+sources, a checksum-pinned remote archive, and offline operation.
+Snapshot: [ch12](ch12).
+
+## 13. Patching sources
+
+[Continue with Chapter 13](docs/ch13.md): an explicit patch task and
+cross-layer file search. Snapshot: [ch13](ch13).
+
+## 14. Configuring, compiling, and installing
+
+[Continue with Chapter 14](docs/ch14.md): a host compiler, out-of-tree build,
+and staged installation driven by a tutorial class. Snapshot: [ch14](ch14).
+
+## 15. Task outputs and cross-recipe dependencies
+
+[Continue with Chapter 15](docs/ch15.md): published artifacts and the
+differences between direct, build-time and runtime task dependency flags.
+Snapshot: [ch15](ch15).
+
+## 16. Stamps, signatures, and incremental builds
+
+[Continue with Chapter 16](docs/ch16.md): measured task reuse, file checksums,
+explicit variable dependencies and signature comparisons. Snapshot: [ch16](ch16).
+
+## 17. Providers and selecting recipes
+
+[Continue with Chapter 17](docs/ch17.md): virtual targets, implementation and
+version preferences, ambiguity and missing-provider diagnostics.
+Snapshot: [ch17](ch17).
+
+## 18. Events, hooks, and diagnostics
+
+[Continue with Chapter 18](docs/ch18.md): event-handler contexts, task hooks,
+logging, locks, explicit failures and recovery. Snapshot: [ch18](ch18).
+
+## 19. Multiple configurations
+
+[Continue with Chapter 19](docs/ch19.md): isolated configuration datastores
+and a verified artifact dependency across configurations. Snapshot: [ch19](ch19).
+
+## 20. Advanced metadata and layer selection
+
+[Continue with Chapter 20](docs/ch20.md): deferred inheritance, custom recipe
+variants, masking, optional layer appends and competing recipe priorities.
+Snapshot: [ch20](ch20).
+
+## 21. Summary
+
+You now have a standalone project demonstrating the major stages of BitBake:
+
+| Stage | Concepts and chapters |
+|---|---|
+| Discover metadata | Configuration, layers, recipes, classes, includes and appends (4–8); masking, priorities and dynamic appends (20) |
+| Finalize recipes | Variables, assignment timing, overrides and anonymous Python (9–10); deferred inheritance and variants (20) |
+| Select targets | Build/runtime providers and preferred versions (15, 17) |
+| Construct the graph | Task registration, ordering, direct/dependency task flags and cross-configuration edges (11, 15, 19) |
+| Execute work | Explicit fetch, unpack, patch, configure, compile and install tasks (12–14); hooks, locks, events and diagnostics (18) |
+| Reuse work | Parse caches, stamps, file checksums, variable dependencies and signature comparisons (16) |
+
+Chapters 10–20 have detailed text under [docs](docs), cumulative snapshots
+under their respective `chNN` directories, and executable checks under
+[tests](tests). The [README](README.md) explains prerequisites and how to run
+all checks. The [reviewed roadmap](ROADMAP-Advanced-Chapters.md) records the
+completed scope.
+
+The engine supplies parsing, dependency resolution, scheduling, fetcher APIs
+and signatures. Our small classes supply the source/build task chain and
+artifact contracts. OE-Core normally adds much more: cross-toolchains,
+sysroots, packaging, images and shared-state-cache policy. These examples
+do not pretend to implement those systems.
+
+To continue, change one input, predict its effect on the datastore or graph,
+then inspect the output, task log and signature difference. Prefer this
+evidence to deleting a build directory whenever something is surprising.
