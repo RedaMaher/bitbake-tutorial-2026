@@ -23,7 +23,7 @@ standalone example rather than claiming BitBake provides that class or task.
   - Inspect `bitbake -g`, `task-depends.dot`, and `bitbake -e`.
   - Explain that setting `DEPENDS` alone does not wire tasks in this minimal project.
 
-- [ ] **Ch 12 — Fetching and unpacking sources**
+- [x] **Ch 12 — Fetching and unpacking sources** ([chapter](docs/ch12.md), [snapshot](ch12))
   - Introduce `SRC_URI`, `DL_DIR`, `WORKDIR`, and the BitBake fetcher.
   - Define and order small `do_fetch` and `do_unpack` tasks explicitly; bare
     BitBake's `base.bbclass` does not provide them.

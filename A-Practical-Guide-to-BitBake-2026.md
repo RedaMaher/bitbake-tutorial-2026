@@ -15,6 +15,7 @@
 9.  [Using variables](#9-using-variables)
 10. [Overrides, operators, and task flags](#10-overrides-operators-and-task-flags)
 11. [Task dependencies and ordering](#11-task-dependencies-and-ordering)
+12. [Fetching and unpacking sources](#12-fetching-and-unpacking-sources)
 21. [Summary](#21-summary)
 
 ## 1. Preface
@@ -569,6 +570,12 @@ snapshot is [ch10](ch10).
 
 [Continue with Chapter 11](docs/ch11.md): task registration, graph inspection,
 and explicit dependencies across recipes. Snapshot: [ch11](ch11).
+
+## 12. Fetching and unpacking sources
+
+[Continue with Chapter 12](docs/ch12.md): explicit fetch/unpack tasks, local
+sources, a checksum-pinned remote archive, and offline operation.
+Snapshot: [ch12](ch12).
 
 ## 21. Summary
 
