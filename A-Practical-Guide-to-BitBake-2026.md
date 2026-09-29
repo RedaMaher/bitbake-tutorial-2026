@@ -14,6 +14,7 @@
 8.  [Share and reuse configurations](#8-share-and-reuse-configurations)
 9.  [Using variables](#9-using-variables)
 10. [Overrides, operators, and task flags](#10-overrides-operators-and-task-flags)
+11. [Task dependencies and ordering](#11-task-dependencies-and-ordering)
 21. [Summary](#21-summary)
 
 ## 1. Preface
@@ -563,6 +564,11 @@ Its log should contain:
 [Continue with Chapter 10](docs/ch10.md): assignment timing, conditional
 overrides, anonymous Python, and task directory/stamp flags. The runnable
 snapshot is [ch10](ch10).
+
+## 11. Task dependencies and ordering
+
+[Continue with Chapter 11](docs/ch11.md): task registration, graph inspection,
+and explicit dependencies across recipes. Snapshot: [ch11](ch11).
 
 ## 21. Summary
 

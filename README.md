@@ -23,6 +23,7 @@ The chapter directories contain the completed project at each stage of the tutor
 * `ch08` — Class inheritance, append files, and includes
 * `ch09` — Global and recipe-local variables
 * [ch10](ch10) — Overrides, operators, and task flags ([chapter](docs/ch10.md))
+* [ch11](ch11) — Task dependencies and ordering ([chapter](docs/ch11.md))
 
 Each chapter contains its own `build` directory and the layers required for that stage.
 

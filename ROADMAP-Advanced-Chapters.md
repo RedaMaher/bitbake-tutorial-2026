@@ -18,7 +18,7 @@ standalone example rather than claiming BitBake provides that class or task.
     checking their logs and directories.
   - Show a short anonymous Python example and datastore access.
 
-- [ ] **Ch 11 — Task dependencies and ordering**
+- [x] **Ch 11 — Task dependencies and ordering** ([chapter](docs/ch11.md), [snapshot](ch11))
   - Use `addtask ... before/after` and a direct `[depends]` edge between recipes.
   - Inspect `bitbake -g`, `task-depends.dot`, and `bitbake -e`.
   - Explain that setting `DEPENDS` alone does not wire tasks in this minimal project.

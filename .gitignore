@@ -1,4 +1,5 @@
 /ch*/build/tmp/
+/ch*/build/cache/
 /ch*/build/tmp-*/
 /ch*/build/bitbake-cookerdaemon.log
 /ch*/build/bitbake.lock
