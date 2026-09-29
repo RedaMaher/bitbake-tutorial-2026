@@ -23,6 +23,7 @@
 17. [Providers and selecting recipes](#17-providers-and-selecting-recipes)
 18. [Events, hooks, and diagnostics](#18-events-hooks-and-diagnostics)
 19. [Multiple configurations](#19-multiple-configurations)
+20. [Advanced metadata and layer selection](#20-advanced-metadata-and-layer-selection)
 21. [Summary](#21-summary)
 
 ## 1. Preface
@@ -31,7 +32,10 @@
 
 BitBake is used mainly by OpenEmbedded and the Yocto Project to build Linux distributions, and it has a fairly steep learning curve. This tutorial exists to flatten that curve.
 
-It does not try to cover everything about BitBake — that isn’t really possible — but it explains the fundamentals well enough that you can start writing your own recipes.
+It covers the major user-facing BitBake concepts through runnable standalone
+examples, from the smallest project to signatures, providers, events and
+multiconfig. It is not an exhaustive catalog of every variable, fetcher backend
+or internal API; the versioned manual remains the reference for those details.
 
 ### 1.2 Target of this tutorial
 
@@ -621,6 +625,37 @@ logging, locks, explicit failures and recovery. Snapshot: [ch18](ch18).
 [Continue with Chapter 19](docs/ch19.md): isolated configuration datastores
 and a verified artifact dependency across configurations. Snapshot: [ch19](ch19).
 
+## 20. Advanced metadata and layer selection
+
+[Continue with Chapter 20](docs/ch20.md): deferred inheritance, custom recipe
+variants, masking, optional layer appends and competing recipe priorities.
+Snapshot: [ch20](ch20).
+
 ## 21. Summary
 
-This tutorial used BitBake as a standalone task engine to practice: what BitBake actually does; the build/layer project layout; recipes, classes, tasks, and task ordering; multiple layers and how they relate to each other; the five metadata file types; and global and recipe-local variables.
+You now have a standalone project demonstrating the major stages of BitBake:
+
+| Stage | Concepts and chapters |
+|---|---|
+| Discover metadata | Configuration, layers, recipes, classes, includes and appends (4–8); masking, priorities and dynamic appends (20) |
+| Finalize recipes | Variables, assignment timing, overrides and anonymous Python (9–10); deferred inheritance and variants (20) |
+| Select targets | Build/runtime providers and preferred versions (15, 17) |
+| Construct the graph | Task registration, ordering, direct/dependency task flags and cross-configuration edges (11, 15, 19) |
+| Execute work | Explicit fetch, unpack, patch, configure, compile and install tasks (12–14); hooks, locks, events and diagnostics (18) |
+| Reuse work | Parse caches, stamps, file checksums, variable dependencies and signature comparisons (16) |
+
+Chapters 10–20 have detailed text under [docs](docs), cumulative snapshots
+under their respective `chNN` directories, and executable checks under
+[tests](tests). The [README](README.md) explains prerequisites and how to run
+all checks. The [reviewed roadmap](ROADMAP-Advanced-Chapters.md) records the
+completed scope.
+
+The engine supplies parsing, dependency resolution, scheduling, fetcher APIs
+and signatures. Our small classes supply the source/build task chain and
+artifact contracts. OE-Core normally adds much more: cross-toolchains,
+sysroots, packaging, images and shared-state-cache policy. These examples
+do not pretend to implement those systems.
+
+To continue, change one input, predict its effect on the datastore or graph,
+then inspect the output, task log and signature difference. Prefer this
+evidence to deleting a build directory whenever something is surprising.

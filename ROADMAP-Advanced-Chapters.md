@@ -77,9 +77,9 @@ standalone example rather than claiming BitBake provides that class or task.
   - Use `BBMULTICONFIG`, separate output directories, and `[mcdepends]`.
   - Verify an artifact crossing configuration boundaries without a toolchain.
 
-- [ ] **Ch 20 — Advanced metadata and layer selection**
+- [x] **Ch 20 — Advanced metadata and layer selection** ([chapter](docs/ch20.md), [snapshot](ch20))
   - Exercise deferred inheritance, custom `BBCLASSEXTEND` variants, masking,
-    and conditional layer metadata.
+    conditional layer metadata, and competing-recipe layer priorities.
   - Keep recipe cloning distinct from OE-Core's native/nativesdk classes.
 
 ## Review decisions
@@ -92,6 +92,8 @@ selects a hashing policy rather than assuming an OE-Core configuration.
 
 Every implementation includes a cumulative `chNN/` snapshot, linked chapter
 text, and a runnable `tests/check-chNN.sh`. Each chapter is a separate commit.
+Run `bash tests/check-all.sh` for the offline checks and
+`bash tests/check-ch12.sh --network` for the optional remote-fetch checks.
 This covers the major user-facing concepts, not every fetcher backend, internal
 API, or production policy. Hash equivalence, setscene/sstate policy, packaging,
 sysroots and cross-toolchains are distinguished from this minimal build, not
