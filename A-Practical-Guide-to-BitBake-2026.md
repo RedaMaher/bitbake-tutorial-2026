@@ -18,6 +18,7 @@
 12. [Fetching and unpacking sources](#12-fetching-and-unpacking-sources)
 13. [Patching sources](#13-patching-sources)
 14. [Configuring, compiling, and installing](#14-configuring-compiling-and-installing)
+15. [Task outputs and cross-recipe dependencies](#15-task-outputs-and-cross-recipe-dependencies)
 21. [Summary](#21-summary)
 
 ## 1. Preface
@@ -588,6 +589,12 @@ cross-layer file search. Snapshot: [ch13](ch13).
 
 [Continue with Chapter 14](docs/ch14.md): a host compiler, out-of-tree build,
 and staged installation driven by a tutorial class. Snapshot: [ch14](ch14).
+
+## 15. Task outputs and cross-recipe dependencies
+
+[Continue with Chapter 15](docs/ch15.md): published artifacts and the
+differences between direct, build-time and runtime task dependency flags.
+Snapshot: [ch15](ch15).
 
 ## 21. Summary
 

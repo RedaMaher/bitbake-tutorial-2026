@@ -45,7 +45,7 @@ standalone example rather than claiming BitBake provides that class or task.
     task logs and the generated files.
   - Explain that cross-toolchain setup and sysroot staging are out of scope.
 
-- [ ] **Ch 15 — Task outputs and cross-recipe dependencies**
+- [x] **Ch 15 — Task outputs and cross-recipe dependencies** ([chapter](docs/ch15.md), [snapshot](ch15))
   - Have one recipe produce a file and another consume it through an explicit
     task dependency, verifying both the graph and the output.
   - Contrast task-level `[depends]` with `[deptask]` and `[rdeptask]` only after
