@@ -28,6 +28,7 @@ The chapter directories contain the completed project at each stage of the tutor
 * [ch13](ch13) — Patching sources ([chapter](docs/ch13.md))
 * [ch14](ch14) — Configuring, compiling, and installing ([chapter](docs/ch14.md))
 * [ch15](ch15) — Task outputs and cross-recipe dependencies ([chapter](docs/ch15.md))
+* [ch16](ch16) — Stamps, signatures, and incremental builds ([chapter](docs/ch16.md))
 
 Each chapter contains its own `build` directory and the layers required for that stage.
 

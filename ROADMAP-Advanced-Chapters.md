@@ -53,7 +53,7 @@ standalone example rather than claiming BitBake provides that class or task.
   - Do not present OE-Core package splitting, `do_package`, or package-manager
     backends as built-in BitBake behavior.
 
-- [ ] **Ch 16 — Stamps, signatures, and incremental builds**
+- [x] **Ch 16 — Stamps, signatures, and incremental builds** ([chapter](docs/ch16.md), [snapshot](ch16))
   - Demonstrate when a task is skipped or rerun after a metadata or input
     change, using stamps and `bitbake -S`/`bitbake-diffsigs` where available.
   - Explain the difference between BitBake's task signatures and the

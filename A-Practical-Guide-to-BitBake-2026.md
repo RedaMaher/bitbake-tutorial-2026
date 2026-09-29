@@ -19,6 +19,7 @@
 13. [Patching sources](#13-patching-sources)
 14. [Configuring, compiling, and installing](#14-configuring-compiling-and-installing)
 15. [Task outputs and cross-recipe dependencies](#15-task-outputs-and-cross-recipe-dependencies)
+16. [Stamps, signatures, and incremental builds](#16-stamps-signatures-and-incremental-builds)
 21. [Summary](#21-summary)
 
 ## 1. Preface
@@ -595,6 +596,11 @@ and staged installation driven by a tutorial class. Snapshot: [ch14](ch14).
 [Continue with Chapter 15](docs/ch15.md): published artifacts and the
 differences between direct, build-time and runtime task dependency flags.
 Snapshot: [ch15](ch15).
+
+## 16. Stamps, signatures, and incremental builds
+
+[Continue with Chapter 16](docs/ch16.md): measured task reuse, file checksums,
+explicit variable dependencies and signature comparisons. Snapshot: [ch16](ch16).
 
 ## 21. Summary
 
