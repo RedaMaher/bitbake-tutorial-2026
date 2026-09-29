@@ -1,0 +1,5 @@
+BB_SIGNATURE_HANDLER = "basichash"
+BB_NUMBER_THREADS = "2"
+BB_BASEHASH_IGNORE_VARS = "TOPDIR TMPDIR FILE"
+THISDIR = "${@os.path.dirname(d.getVar('FILE'))}"
+TUTORIAL_ARTIFACTS = "${TMPDIR}/artifacts"

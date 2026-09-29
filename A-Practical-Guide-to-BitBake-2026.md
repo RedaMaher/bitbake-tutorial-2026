@@ -21,6 +21,7 @@
 15. [Task outputs and cross-recipe dependencies](#15-task-outputs-and-cross-recipe-dependencies)
 16. [Stamps, signatures, and incremental builds](#16-stamps-signatures-and-incremental-builds)
 17. [Providers and selecting recipes](#17-providers-and-selecting-recipes)
+18. [Events, hooks, and diagnostics](#18-events-hooks-and-diagnostics)
 21. [Summary](#21-summary)
 
 ## 1. Preface
@@ -608,6 +609,11 @@ explicit variable dependencies and signature comparisons. Snapshot: [ch16](ch16)
 [Continue with Chapter 17](docs/ch17.md): virtual targets, implementation and
 version preferences, ambiguity and missing-provider diagnostics.
 Snapshot: [ch17](ch17).
+
+## 18. Events, hooks, and diagnostics
+
+[Continue with Chapter 18](docs/ch18.md): event-handler contexts, task hooks,
+logging, locks, explicit failures and recovery. Snapshot: [ch18](ch18).
 
 ## 21. Summary
 

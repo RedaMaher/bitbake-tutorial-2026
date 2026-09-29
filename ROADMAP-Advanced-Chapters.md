@@ -68,7 +68,7 @@ standalone example rather than claiming BitBake provides that class or task.
   - Avoid OE-Core-specific `native`/`nativesdk` behavior unless a separate,
     explicitly implemented example is added.
 
-- [ ] **Ch 18 — Events, hooks, and diagnostics**
+- [x] **Ch 18 — Events, hooks, and diagnostics** ([chapter](docs/ch18.md), [snapshot](ch18))
   - Add task pre/post functions and filtered event handlers.
   - Distinguish parse, cooker, and worker contexts; exercise logging and a
     deliberate failure with recovery.
