@@ -331,7 +331,23 @@ List a recipe’s tasks with:
     bitbake -c mypatch second
     bitbake world
 
-`bitbake second` runs the default build task and its predecessors; `-c mypatch` runs `do_mypatch` explicitly; `bitbake world` builds every recipe visible to the configuration. Task logs live under `build/tmp/work/<recipe>-<version>-<revision>/temp/`.
+`bitbake second` runs the default build task and its predecessors; `-c mypatch` requests `do_mypatch` explicitly; `bitbake world` builds every recipe visible to the configuration. Task logs live under `build/tmp/work/<recipe>-<version>-<revision>/temp/`.
+
+### 6.5 Why a requested task can be skipped
+
+After `bitbake second`, the explicit `-c mypatch` command normally reports
+`1 didn't need to be rerun`. That is success, not a missing task: a **stamp**
+under `build/tmp/stamps` records that the task completed, so BitBake considers
+it current and reuses the result. The existing `log.do_mypatch` is still the
+evidence of its last execution; a skipped task does not write a new log.
+
+The copied base class marks `do_build[nostamp] = "1"`, so build itself runs
+each time, while `do_mypatch` can stay current. A stamp is not a backup or
+an output-existence check. Do not delete outputs and expect BitBake to notice.
+For now, recognize the skip message; Chapter 11 introduces controlled reruns,
+and [Chapter 16](docs/ch16.md) explains signatures and input changes. The
+minimal configuration used here does not yet enable the hashing policy from
+Chapter 10, so do not assume every metadata edit will invalidate a stamp.
 
 ## 7. BitBake layers
 
