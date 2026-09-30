@@ -41,6 +41,16 @@ or internal API; the versioned manual remains the reference for those details.
 
 The tutorial builds the smallest possible project and extends it step by step, to show and explain how BitBake actually works.
 
+No Yocto or BitBake knowledge is assumed. You should be comfortable opening
+a Linux terminal, changing directories with `cd`, editing a text file, and
+reading command output. The examples introduce small shell and Python
+functions as they are needed; you do not need to write a build system first.
+
+The learning path is: print a message, reuse tasks, combine layers, process
+source files, compile a tiny host program, then investigate dependencies and
+rebuild decisions. The final result is a set of small standalone experiments,
+not a Linux image to boot on a board.
+
 ### 1.3 Acknowledgments
 
 The learning sequence is inspired by Harald Achitz’s original “A Practical Guide to BitBake.” Issues for this edition's accompanying example repository can be reported at the [repository issue tracker](https://github.com/RedaMaher/bitbake-tutorial-2026/issues).
@@ -57,6 +67,47 @@ BitBake is, at its core, a Python program: driven by configuration you write, it
 Configuration, tasks, and recipes are written in BitBake’s own small language — variables plus shell or Python code. Since BitBake actually executes that code, it could in theory be used for things other than building software, though that’s probably not a great idea.
 
 BitBake was built for building software, so it has features suited to that: it can resolve dependencies and put tasks into the right order. Building software packages also tends to repeat the same kinds of steps — downloading and extracting source, running configure, running make, writing a log message — and BitBake gives you a way to abstract, encapsulate, and reuse that work in a configurable way.
+
+### 2.2 Yocto, OpenEmbedded, Poky, and BitBake
+
+These names refer to different parts of the ecosystem, not four interchangeable
+build commands:
+
+| Name | Role | Needed for this tutorial? |
+|---|---|---|
+| Yocto Project | The wider project providing tools, documentation, and practices for creating custom Linux systems. It is not one ready-made Linux distribution. | No checkout is needed; we use its BitBake manual. |
+| OpenEmbedded (OE) | The community and build framework whose metadata describes how to build software and Linux systems. | No OE layers are used here. |
+| OpenEmbedded-Core (OE-Core) | A shared core of recipes, classes, and configuration, including much of the toolchain, packaging, and image-building policy. | No; we write a few small teaching classes instead. |
+| Poky | A reference integration associated with Yocto, combining BitBake, OE-Core, and reference distribution metadata. Many Yocto guides start from a Poky checkout. | No; do not follow a Poky setup step for this standalone guide. |
+| BitBake | The engine that reads metadata, resolves dependencies, and schedules tasks. | Yes; Chapter 3 installs it by itself. |
+
+Think of BitBake as the engine and metadata as its instructions. BitBake
+does not infer "compile a program" from a recipe filename: a recipe or class
+must define and connect the tasks. In a full OE build, existing classes supply
+much of that behavior. Here we keep it visible by defining the tasks ourselves.
+
+For example, `bitbake first` will select the recipe named `first` and request
+its default task, `do_build`. Our first version of that task only prints a
+message. Later, `bitbake hello-host` will follow a task chain to fetch, patch,
+compile, and stage a tiny program. Neither target creates a Linux image.
+
+### 2.3 A small glossary
+
+Use this as a reference rather than a list to memorize. Each concept gets a
+working example later.
+
+| Term | Meaning here | First example |
+|---|---|---|
+| Metadata | The configuration, variable assignments, and task definitions that BitBake reads. | [Chapter 4](#4-create-a-project) |
+| Recipe | A `.bb` file describing a buildable item, such as `first_0.1.bb`. | [Chapter 5](#5-the-first-recipe) |
+| Target | The name requested on a command line, such as `first`; it usually selects a recipe, though aliases also exist. | [Chapter 5](#5-the-first-recipe) |
+| Task | A registered unit of shell or Python work, such as `do_build`. A function is not automatically a scheduled task. | [Chapters 5-6](#5-the-first-recipe) |
+| Class | A `.bbclass` file providing metadata that recipes can reuse with `inherit`. | [Chapter 6](#6-classes-and-functions) |
+| Layer | A directory grouping related metadata, conventionally named `meta-...`. Layers are not sequential build stages. | [Chapter 7](#7-bitbake-layers) |
+| Datastore | BitBake's collection of variables and flags for a particular configuration, recipe, or task; Python accesses it as `d`. | [Chapters 6 and 9](#6-classes-and-functions) |
+| Dependency | A prerequisite relationship; the scheduler must complete the prerequisite before the dependent task. | [Chapter 11](docs/ch11.md) |
+| Stamp | A record of successful task execution used to decide whether a task is current, not a copy of its output. | [Chapter 6](#65-why-a-requested-task-can-be-skipped) |
+| Signature | A hash representing a task's code and tracked inputs, used by the configured signature policy to detect changes. | [Chapter 16](docs/ch16.md) |
 
 ## 3. Setup BitBake
 
