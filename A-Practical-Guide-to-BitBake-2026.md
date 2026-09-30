@@ -629,6 +629,44 @@ and `log.do_build` should contain
 
     myvar_sh: hello from MYVAR
 
+#### 9.1.3 Inspect a variable before running a task
+
+From the same build directory, ask BitBake for the recipe's parsed
+environment and select the variable you want:
+
+```bash
+bitbake -e myvar | grep '^MYVAR='
+```
+
+Expect:
+
+```text
+MYVAR="hello from MYVAR"
+```
+
+`-e myvar` shows the datastore after configuration, classes, and recipe
+metadata have been read; it does not execute the recipe's build tasks.
+This is different from `echo "$MYVAR"` in your terminal, which reads a
+shell variable rather than BitBake's datastore. The `^` in the `grep`
+pattern matches the start of a line, so you select the final assignment
+rather than every mention of the variable.
+
+To investigate where a value came from, save the full dump:
+
+```bash
+bitbake -e myvar > myvar.env
+```
+
+Open `myvar.env` in your editor and find the final `MYVAR=` assignment.
+The preceding comments show its assignment history and source locations.
+Use this workflow whenever an unexpected value reaches a task. Do not
+source the dump as a shell setup script; it is inspection output.
+Remove it when finished:
+
+```bash
+rm myvar.env
+```
+
 ### 9.2 Local variables
 
 Create `$HOME/bbTutorial/meta-two/classes/varbuild.bbclass`:
@@ -662,6 +700,17 @@ In the terminal, build the recipe:
 Its log should contain:
 
     build with args: my build arguments
+
+Inspect the input independently of that task log:
+
+```bash
+bitbake -e varbuild | grep '^BUILDARGS='
+```
+
+Expect `BUILDARGS="my build arguments"`. Here the assignment belongs to the
+`varbuild` recipe; it does not set `BUILDARGS` for every recipe in the layer.
+The `MYVAR` assignment in `local.conf`, by contrast, is available through
+the shared configuration, though an individual recipe can override it.
 
 ## 10. Overrides, operators, and task flags
 
