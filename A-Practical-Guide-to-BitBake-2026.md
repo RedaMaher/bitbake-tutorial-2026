@@ -129,6 +129,23 @@ We can do this by running:
 
 These commands configure BitBake for the current terminal session. If you open a new terminal, you must run them again.
 
+If you have this tutorial repository on disk, you can use its
+[bbenv.include](bbenv.include) helper **instead of** the two exports above.
+From the tutorial repository root, set the absolute path to your extracted
+BitBake release and source the helper:
+
+```bash
+export BITBAKE_ROOT_DIR=/path/to/bitbake-2.18.0
+source ./bbenv.include
+```
+
+Replace `/path/to/bitbake-2.18.0` with your real directory. The helper checks
+for `bin` and `lib`, then adds them to `PATH` and `PYTHONPATH`. Source it in
+the terminal where you will run the exercises; `bash bbenv.include` cannot
+configure its parent shell. Without `BITBAKE_ROOT_DIR`, the helper looks for
+a directory named `bitbake` next to itself. It does not download BitBake or
+select a chapter's build directory.
+
 First we check that everything works and BitBake is installed. To do that, run:
 
     bitbake --version
@@ -266,6 +283,13 @@ status 0. The useful part here is observing how BitBake parses the
 configuration. We add the first recipe in the next chapter.
 
 Notice that BitBake also created a `tmp` directory alongside `conf/`.
+
+The completed [ch04 snapshot](ch04) is a reference for the project you just
+created, not a second directory that BitBake needs to load. Continue editing
+your own `bbTutorial` through Chapter 9. Each `chNN` snapshot shows the
+expected metadata at the **end** of that chapter;
+[Section 9.3](#93-compare-your-project-with-the-completed-snapshot) shows how
+to compare the finished project without comparing generated build output.
 
 ## 5. The first recipe
 
@@ -744,6 +768,38 @@ Expect `BUILDARGS="my build arguments"`. Here the assignment belongs to the
 `varbuild` recipe; it does not set `BUILDARGS` for every recipe in the layer.
 The `MYVAR` assignment in `local.conf`, by contrast, is available through
 the shared configuration, though an individual recipe can override it.
+
+### 9.3 Compare your project with the completed snapshot
+
+You now have the same set of examples as [ch09](ch09). From the **tutorial
+repository root**, not your project's build directory, compare the layers
+and configuration:
+
+```bash
+diff -ru ch09/meta-tutorial "$HOME/bbTutorial/meta-tutorial"
+diff -ru ch09/meta-two "$HOME/bbTutorial/meta-two"
+diff -u ch09/build/conf/bblayers.conf "$HOME/bbTutorial/build/conf/bblayers.conf"
+diff -u ch09/build/local.conf "$HOME/bbTutorial/build/local.conf"
+```
+
+If you chose another project location, substitute it for `$HOME/bbTutorial`.
+`diff` is read-only: status 0 means identical, 1 means differences were found,
+and a higher status indicates a comparison error such as a missing path.
+With different files, `-` lines are from the snapshot and `+` lines are from
+your project. Review differences rather than automatically replacing your work.
+Harmless whitespace or assignment ordering can differ; focus on missing files,
+values, task definitions, and include paths.
+
+At earlier checkpoints, substitute that chapter's `chNN` path and compare
+only the files and layers introduced so far: `meta-two` appears in Chapter 7
+and `local.conf` in Chapter 8. Do not compare or copy the whole `build`
+directory: it also holds machine-specific logs, caches, outputs, and stamps.
+
+To try the completed example independently, enter `ch09/build` and run
+`bitbake myvar varbuild`. Your own project's outputs remain separate.
+From Chapter 10, the guide uses these completed snapshots for experiments
+and starts each chapter with a list of changes. You may use that list to
+continue extending your own project instead.
 
 ## 10. Overrides, operators, and task flags
 
