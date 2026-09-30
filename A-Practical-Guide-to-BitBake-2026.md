@@ -236,23 +236,34 @@ In a terminal, change into the build directory we just created — that’s our 
 
 If the setup is correct, BitBake reports:
 
-    Nothing to do. Use 'bitbake world' to build everything,
-    or run 'bitbake --help' for usage information.
+    Nothing to do.  Use 'bitbake world' to build everything, or run 'bitbake --help' for usage information.
+
+BitBake 2.18.0 returns exit status **1** for this no-target invocation.
+Here the message confirms configuration was found; the nonzero status means
+no work was requested, not that a build task failed. If you run these steps
+in a script with `set -e`, handle this expected status rather than treating
+it as a successful build.
 
 Not very useful on its own, but a good start — and a good moment to introduce a useful flag, verbose debug output:
 
     bitbake -vDDD world
 
-The output should look similar to this:
+Representative lines from the output are:
 
-    Loading cache: 100%
+    Loading cache...done.
     Loaded 0 entries from dependency cache.
     DEBUG: collating packages for "world"
     DEBUG: Target list: []
     NOTE: Resolving any missing task queue dependencies
     DEBUG: Resolved 0 extra dependencies
 
-You’ll see a stream of NOTE: and DEBUG: lines. -vDDD enables very detailed output, and world asks BitBake to build every available recipe. Since the project has no recipes yet, there are no build tasks to run; the useful part here is observing how BitBake parses the configuration. We add the first recipe in the next chapter.
+You’ll see a stream of NOTE: and DEBUG: lines. Progress formatting can differ
+between an interactive terminal and redirected output. `-vDDD` enables very
+detailed output, and `world` asks BitBake to build every eligible recipe.
+Since the project has no recipes yet, there are no build tasks to run;
+unlike the no-target invocation, this empty `world` request exits with
+status 0. The useful part here is observing how BitBake parses the
+configuration. We add the first recipe in the next chapter.
 
 Notice that BitBake also created a `tmp` directory alongside `conf/`.
 
@@ -262,11 +273,15 @@ BitBake needs recipes before it can do useful work. Check the current recipe lis
 
 
     bitbake -s
-    
-    Recipe Name          Latest Version        Preferred Version
-    ===========          ==============        =================
+
+After the cache/parsing messages, BitBake 2.18.0 prints a table with four columns:
+
+    Recipe Name          Latest Version        Preferred Version       Required Version
+    ===========          ==============        =================       ================
 
 The list is empty — we haven’t created a recipe yet.
+The examples below abbreviate column spacing; compare names and values,
+not the number of spaces.
 
 ### 5.1 The cache location
 
@@ -306,8 +321,8 @@ List the recipes and build `first`:
 
 `bitbake -s` now shows:
 
-    Recipe Name          Latest Version        Preferred Version
-    ===========          ==============        =================
+    Recipe Name          Latest Version        Preferred Version       Required Version
+    ===========          ==============        =================       ================
     first                       :0.1-r1
 
 and the build summary should say every attempted task succeeded. The task log is at:
@@ -367,8 +382,8 @@ This recipe shows three kinds of reuse: `inherit mybuild` pulls in the class’s
 
 should now show:
 
-    Recipe Name          Latest Version        Preferred Version
-    ===========          ==============        =================
+    Recipe Name          Latest Version        Preferred Version       Required Version
+    ===========          ==============        =================       ================
     first                       :0.1-r1
     second                      :1.0-r1
 
@@ -454,10 +469,14 @@ Add to `meta-two/conf/layer.conf`:
 
 bitbake-layers show-layers should now list both layer collections with priority 5:
 
-    layer       path                                  priority
-    =============================================================
-    tutorial    /home/user/bbTutorial/meta-tutorial    5
-    two         /home/user/bbTutorial/meta-two         5
+    layer       path                                            priority
+    ===================================================================
+    tutorial    /home/user/bbTutorial/build/../meta-tutorial      5
+    two         /home/user/bbTutorial/build/../meta-two           5
+
+Your absolute prefix and column spacing will differ. The `build/../`
+component comes from our `${TOPDIR}/../meta-...` assignments: `..` means the
+parent directory, so this is the same layer directory, not an extra copy.
 
 At this stage, BitBake can also warn that no .bb files match BBFILE_PATTERN_two. That is expected because meta-two is still empty; Chapter 8 adds its first recipe.
 
