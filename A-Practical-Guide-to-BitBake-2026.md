@@ -43,7 +43,7 @@ The tutorial builds the smallest possible project and extends it step by step, t
 
 ### 1.3 Acknowledgments
 
-The learning sequence is inspired by Harald Achitz’s original “A Practical Guide to BitBake.” Issues for the accompanying example repository can be reported at the [BitBake guide issue tracker](https://bitbucket.org/a4z/bitbakeguide/issues).
+The learning sequence is inspired by Harald Achitz’s original “A Practical Guide to BitBake.” Issues for this edition's accompanying example repository can be reported at the [repository issue tracker](https://github.com/RedaMaher/bitbake-tutorial-2026/issues).
 
 
 ## 2. BitBake
@@ -60,7 +60,7 @@ BitBake was built for building software, so it has features suited to that: it c
 
 ## 3. Setup BitBake
 
-BitBake is available at [github.com/openembedded/bitbake](https://github.com/openembedded/bitbake). This tutorial was tested with Python 3.14.4 and BitBake 2.18.0 on Ubuntu 26.04 — if you hit a problem with a different combination, please report it (see 1.4). When BitBake is used inside a full Yocto/OpenEmbedded build it is normally bundled with the layers and started through the project’s own setup script; here we install the standalone `bitbake-2.18.0` release directly, so the engine underneath stays visible.
+BitBake is available at [github.com/openembedded/bitbake](https://github.com/openembedded/bitbake). This tutorial was tested with Python 3.14.4 and BitBake 2.18.0 on Ubuntu 26.04 — if you hit a problem with a different combination, please report it at the [repository issue tracker](https://github.com/RedaMaher/bitbake-tutorial-2026/issues). When BitBake is used inside a full Yocto/OpenEmbedded build it is normally bundled with the layers and started through the project’s own setup script; here we install the standalone `bitbake-2.18.0` release directly, so the engine underneath stays visible.
 
 Download the tagged [2.18.0 release](https://github.com/openembedded/bitbake/archive/refs/tags/2.18.0.zip) and extract it.
 
@@ -229,7 +229,7 @@ BitBake finds recipes through `BBFILES`, which we already set in `meta-tutorial/
 
 This means: look inside directories named `recipes-*`, then inside a recipe directory, and load files ending in `.bb`.
 
-5.3 Create the first recipe and task
+### 5.3 Create the first recipe and task
 
 Recipe files follow the pattern `name_version.bb`. Create the directory:
 
@@ -284,8 +284,6 @@ A `.bbclass` holds reusable metadata, so a task doesn’t have to be copied into
     EXPORT_FUNCTIONS do_build
 
 `EXPORT_FUNCTIONS do_build` exposes `mybuild_do_build` as `do_build` to any recipe that inherits the class.
-
-### 
 
 ### 6.2 Use mybuild with the second recipe
 
@@ -449,6 +447,9 @@ Create the third recipe:
     PR = "r1"
 
     inherit confbuild
+
+In the terminal, build the recipe:
+
     cd "$HOME/bbTutorial/build"
     bitbake third
 
@@ -456,10 +457,13 @@ Both `do_configure` and `do_build` should succeed.
 
 ### 8.2 bbappend files
 
-Update `meta-two/conf/layer.conf` so it also picks up append files:
+Replace the existing `BBFILES` assignment in `meta-two/conf/layer.conf` so it also picks up append files:
 
     BBFILES += "${LAYERDIR}/recipes-*/*/*.bb \
                 ${LAYERDIR}/recipes-*/*/*.bbappend"
+
+In the terminal, create the append file's directory:
+
     mkdir -p "$HOME/bbTutorial/meta-two/recipes-base/first"
 
 Create `$HOME/bbTutorial/meta-two/recipes-base/first/first_0.1.bbappend`:
@@ -487,6 +491,9 @@ Add to `meta-tutorial/conf/bitbake.conf`:
 
     require local.conf
     include conf/might_exist.conf
+
+In the terminal, try building the recipe:
+
     cd "$HOME/bbTutorial/build"
     bitbake first
 
@@ -567,6 +574,9 @@ Create `$HOME/bbTutorial/meta-two/recipes-vars/varbuild/varbuild_0.1.bb`:
     BUILDARGS = "my build arguments"
 
     inherit varbuild
+
+In the terminal, build the recipe:
+
     cd "$HOME/bbTutorial/build"
     bitbake varbuild
 
