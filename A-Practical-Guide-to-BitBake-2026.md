@@ -428,6 +428,13 @@ Then add it to `$HOME/bbTutorial/build/conf/bblayers.conf`:
 
     bitbake-layers show-layers
 
+At this exact stage, expect the table header but no layer rows. The
+directories are already listed in `BBLAYERS`, but `show-layers` reports
+registered **layer collections**, which we have not named yet. This is not
+a missing-directory error. Section 7.3 adds those collection names; rerun
+the command afterwards to see both rows. If you start from the completed
+`ch07` snapshot, the names are already configured.
+
 Other useful subcommands: `show-recipes`, `show-cross-depends`, `show-appends`, `flatten`, `show-overlayed`.
 
 ### 7.3 Extending the layer configuration
@@ -528,6 +535,11 @@ Replace the existing `BBFILES` assignment in `meta-two/conf/layer.conf` so it al
 
     BBFILES += "${LAYERDIR}/recipes-*/*/*.bb \
                 ${LAYERDIR}/recipes-*/*/*.bbappend"
+
+Keep this as one continued assignment, replacing the earlier `.bb`-only
+assignment rather than adding a duplicate. The `.bb` pattern remains so
+the layer's own recipes are still discovered; the new pattern also finds
+the `.bbappend` files.
 
 In the terminal, create the append file's directory:
 
