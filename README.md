@@ -57,6 +57,11 @@ bitbake first
 
 Always run BitBake commands from the chapter’s `build` directory.
 
+From Chapter 8 onward, this standalone project's local settings are in
+`build/local.conf`, not Yocto/OE's usual `build/conf/local.conf`. Our explicit
+`require local.conf` directive determines that location; see
+[Section 8.3.1](A-Practical-Guide-to-BitBake-2026.md#831-add-a-localconf-for-inclusion).
+
 The optional `bbenv.include` file can configure the current terminal when BitBake is stored elsewhere:
 
 ```bash

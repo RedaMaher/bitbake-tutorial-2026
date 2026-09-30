@@ -566,6 +566,20 @@ Both directives search relative to `BBPATH`: `include file` parses it if present
 
 #### 8.3.1 Add a local.conf for inclusion
 
+This standalone tutorial deliberately uses `build/local.conf`. A typical
+Yocto/OE build uses `build/conf/local.conf` instead. The difference comes
+from the include path in the project's metadata, not a rule that BitBake
+automatically searches both locations:
+
+| Project | Directive in its configuration | File found through the build directory in `BBPATH` |
+|---|---|---|
+| This tutorial | `require local.conf` | `build/local.conf` |
+| Typical Yocto/OE layout | `include conf/local.conf` | `build/conf/local.conf` |
+
+Keep the tutorial's location for these exercises. Moving the file under
+`build/conf` without changing the directive below would leave the required
+file missing. Later chapter snapshots follow the same tutorial convention.
+
 Add to `meta-tutorial/conf/bitbake.conf`:
 
     require local.conf
